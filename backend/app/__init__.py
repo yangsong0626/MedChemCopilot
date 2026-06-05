@@ -1,0 +1,2 @@
+"""MedChemCopilot backend package."""
+

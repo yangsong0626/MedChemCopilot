@@ -1,0 +1,14 @@
+.DS_Store
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+backend/.venv/
+backend/medchem.db
+backend/models/
+backend/reports/
+backend/*.egg-info/
+
+frontend/node_modules/
+frontend/dist/
+

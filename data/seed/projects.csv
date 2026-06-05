@@ -1,0 +1,5 @@
+project_id,project_name,target,therapeutic_area,primary_goal
+KIN001,Aurora-KIN Lead Optimization,Aurora kinase,Oncology,Improve potency while reducing hERG risk
+GPCR002,CCR6 Antagonist Program,CCR6,Inflammation,Balance potency solubility and permeability
+PROT003,BRD4 Degrader Program,BRD4,Oncology,Improve cellular potency and metabolic stability
+

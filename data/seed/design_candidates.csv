@@ -1,0 +1,13 @@
+project_id,design_id,source,smiles,series,submitted_by,status,created_date
+KIN001,KIN001-D001,ai,FC(F)(F)c1ccc(Nc2ncccn2)cc1,A,agent,pending,2026-03-10
+KIN001,KIN001-D002,human,CNc1nccc(N2CCNCC2)n1,B,chemist_a,pending,2026-03-11
+KIN001,KIN001-D003,ai,COc1ccc(Nc2ncc(C)cn2)cc1,A,agent,pending,2026-03-12
+KIN001,KIN001-D004,human,O=C(Nc1ccccn1)c1ccc(F)cc1,B,chemist_b,pending,2026-03-13
+GPCR002,GPCR002-D001,ai,COc1ccc(CCN2CCNCC2)cc1,B,agent,pending,2026-03-10
+GPCR002,GPCR002-D002,human,CC(C)NCCc1ccc(OC)cc1,B,chemist_c,pending,2026-03-11
+GPCR002,GPCR002-D003,ai,Fc1ccc(CCN2CCCCC2)cc1,A,agent,pending,2026-03-12
+GPCR002,GPCR002-D004,human,CN1CCN(CCc2ccc(F)cc2)CC1,B,chemist_a,pending,2026-03-13
+PROT003,PROT003-D001,ai,O=C(Nc1ccc(N2CCOCC2)cc1)c1ccc(F)cc1,A,agent,pending,2026-03-10
+PROT003,PROT003-D002,human,COc1ccc(CNC(=O)c2cccnc2)cc1,B,chemist_d,pending,2026-03-11
+PROT003,PROT003-D003,ai,CN1CCN(c2ccc(NC(=O)c3ccccn3)cc2)CC1,B,agent,pending,2026-03-12
+PROT003,PROT003-D004,human,CCOc1ccc(CNC(=O)c2ccccn2)cc1,B,chemist_b,pending,2026-03-13

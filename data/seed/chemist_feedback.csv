@@ -1,0 +1,8 @@
+project_id,design_id,user_id,feedback,note,created_date
+KIN001,KIN001-D001,chemist_a,like,Interesting potency hypothesis but watch hERG,2026-03-14
+KIN001,KIN001-D002,chemist_b,shortlist,Good solubility-minded modification,2026-03-14
+GPCR002,GPCR002-D001,chemist_c,like,Potentially better solubility than piperidine analogs,2026-03-15
+GPCR002,GPCR002-D003,chemist_a,dislike,Too lipophilic for current project goal,2026-03-15
+PROT003,PROT003-D001,chemist_d,shortlist,Good matched-pair idea for potency,2026-03-16
+PROT003,PROT003-D004,chemist_b,like,Worth checking metabolic stability,2026-03-16
+

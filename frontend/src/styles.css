@@ -1,0 +1,602 @@
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #223036;
+  background: #f5f7f6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100vh;
+  padding: 20px;
+  color: #ecf5f1;
+  background: #173f3b;
+  border-right: 1px solid #0d2927;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.brand p,
+.project-header p,
+.muted {
+  margin: 3px 0 0;
+  color: #6f817c;
+  font-size: 13px;
+}
+
+.brand p {
+  color: #b9d2ca;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: #cde2db;
+}
+
+select,
+input,
+textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: #223036;
+  background: #ffffff;
+  border: 1px solid #cbd7d4;
+  border-radius: 6px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.summary-grid div {
+  padding: 10px;
+  background: #24534d;
+  border: 1px solid #33665f;
+  border-radius: 6px;
+}
+
+.summary-grid span {
+  display: block;
+  font-size: 12px;
+  color: #b9d2ca;
+}
+
+.summary-grid strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 8px 11px;
+  color: #253136;
+  background: #ffffff;
+  border: 1px solid #cbd7d4;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:hover {
+  border-color: #7aa99e;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primary {
+  width: 100%;
+  color: #ffffff;
+  background: #247363;
+  border-color: #247363;
+}
+
+.detail-panel h4,
+.evaluation-panel h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.workspace {
+  min-width: 0;
+  padding: 18px;
+}
+
+.project-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.project-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  min-width: 310px;
+}
+
+.view-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  background: #e8eeeb;
+  border: 1px solid #cbd7d4;
+  border-radius: 8px;
+}
+
+.view-tabs button {
+  min-height: 32px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.view-tabs button.active {
+  color: #ffffff;
+  background: #247363;
+  border-color: #247363;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 14px;
+  align-items: start;
+}
+
+.table-wrap {
+  overflow: auto;
+  background: #ffffff;
+  border: 1px solid #d9e2df;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 10px 11px;
+  text-align: left;
+  border-bottom: 1px solid #edf1ef;
+  white-space: nowrap;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: #536560;
+  background: #f8faf9;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+tbody tr:hover,
+tbody tr.selected {
+  background: #eef7f4;
+}
+
+td strong {
+  display: block;
+  font-weight: 720;
+}
+
+td span {
+  display: block;
+  margin-top: 2px;
+  color: #6f817c;
+  font-size: 12px;
+}
+
+.structure-cell {
+  width: 134px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.molecule {
+  display: block;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.molecule-small {
+  width: 120px;
+  height: 82px;
+}
+
+.molecule-large {
+  width: 100%;
+  max-width: 320px;
+  height: 220px;
+  margin: 0 auto;
+}
+
+.molecule-preview {
+  display: grid;
+  place-items: center;
+  min-height: 236px;
+  padding: 8px;
+  background: #fbfcfb;
+  border: 1px solid #edf1ef;
+  border-radius: 8px;
+}
+
+.compact-preview {
+  min-height: 170px;
+}
+
+.compact-preview .molecule-large {
+  max-width: 260px;
+  height: 170px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-width: 54px;
+  min-height: 23px;
+  justify-content: center;
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.source-ai {
+  color: #23503b;
+  background: #dff1df;
+}
+
+.source-human {
+  color: #4b3a19;
+  background: #f1e4bf;
+}
+
+.source-imported {
+  color: #273d63;
+  background: #dce7f7;
+}
+
+.property {
+  display: inline-flex;
+  justify-content: end;
+  min-width: 42px;
+  color: #26363b;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-panel {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #d9e2df;
+  border-radius: 8px;
+}
+
+.detail-panel > h3,
+.evaluation-panel > h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.detail-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail-title h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.detail-title p {
+  max-width: 250px;
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+  color: #596b66;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.warning-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.warning-list span {
+  padding: 5px 7px;
+  color: #643c20;
+  background: #f5e1cf;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.feedback {
+  margin: 0 0 7px;
+  color: #3c4c48;
+  font-size: 13px;
+}
+
+.design-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 14px;
+  align-items: start;
+}
+
+.sketcher-panel,
+.prediction-panel,
+.evaluation-panel {
+  background: #ffffff;
+  border: 1px solid #d9e2df;
+  border-radius: 8px;
+}
+
+.sketcher-panel {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+}
+
+.sketcher-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sketcher-header h3,
+.prediction-panel h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.sketcher-header p {
+  margin: 4px 0 0;
+  color: #6f817c;
+  font-size: 13px;
+}
+
+.sketcher-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 8px;
+}
+
+.primary-inline {
+  color: #ffffff;
+  background: #247363;
+  border-color: #247363;
+}
+
+.sketcher-canvas {
+  min-height: 360px;
+  padding: 0;
+  background: #fbfcfb;
+  border: 1px solid #edf1ef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sketcher-canvas .molecule-large {
+  max-width: 520px;
+  height: 330px;
+}
+
+.ketcher-shell {
+  width: 100%;
+  height: 560px;
+  background: #ffffff;
+}
+
+.ketcher-shell > div {
+  width: 100%;
+  height: 100%;
+}
+
+.sketch-field {
+  display: grid;
+  gap: 6px;
+}
+
+.sketch-field span {
+  color: #536560;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sketch-field textarea {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 13px;
+}
+
+.descriptor-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.descriptor-strip div,
+.prediction-grid div,
+.potency-card {
+  padding: 10px;
+  background: #f8faf9;
+  border: 1px solid #edf1ef;
+  border-radius: 6px;
+}
+
+.descriptor-strip span,
+.prediction-grid span,
+.potency-card span {
+  display: block;
+  color: #6f817c;
+  font-size: 12px;
+}
+
+.descriptor-strip strong,
+.prediction-grid strong,
+.potency-card strong {
+  display: block;
+  margin-top: 4px;
+  color: #223036;
+  font-variant-numeric: tabular-nums;
+}
+
+.prediction-panel {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.design-side-panel,
+.evaluation-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.evaluation-panel {
+  padding: 14px;
+}
+
+.potency-card {
+  background: #eef7f4;
+  border-color: #c8e3da;
+}
+
+.potency-card strong {
+  font-size: 28px;
+}
+
+.prediction-grid {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 1050px) {
+  .app-shell,
+  .content-grid,
+  .design-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    min-height: auto;
+  }
+
+  .project-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 620px) {
+  .workspace,
+  .sidebar {
+    padding: 14px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .sketcher-header {
+    flex-direction: column;
+  }
+
+  .sketcher-actions {
+    justify-content: stretch;
+  }
+
+  .descriptor-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
