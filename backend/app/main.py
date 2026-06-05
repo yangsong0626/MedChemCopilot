@@ -31,6 +31,7 @@ from app.schemas import (
     ProjectRead,
     ProjectSummary,
     RankRead,
+    SARPairRead,
     ScoreResponse,
     SmilesPredictionRequest,
 )
@@ -41,6 +42,7 @@ from app.services.prediction import predict_smiles, score_project_designs
 from app.services.pregenerated import random_project_design
 from app.services.ranking import rank_project_designs
 from app.services.reports import model_performance_report
+from app.services.sar import potency_cliff_pairs
 
 app = FastAPI(title="MedChemCopilot API", version="0.1.0")
 
@@ -191,6 +193,17 @@ def list_measured_compounds(project_id: str, db: Session = Depends(get_db)) -> l
         )
         for item in compounds.values()
     ]
+
+
+@app.get("/projects/{project_id}/sar-pairs", response_model=list[SARPairRead])
+def list_sar_pairs(
+    project_id: str,
+    limit: int = Query(default=100, ge=1, le=500),
+    min_similarity: float = Query(default=0.0, ge=0.0, le=0.99),
+    db: Session = Depends(get_db),
+) -> list:
+    project = project_or_404(db, project_id)
+    return potency_cliff_pairs(db, project, limit=limit, min_similarity=min_similarity)
 
 
 @app.get("/projects/{project_id}/designs", response_model=list[DesignRead])

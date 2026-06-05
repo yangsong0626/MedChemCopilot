@@ -31,6 +31,21 @@ class CompoundMeasurement(BaseModel):
     properties: dict[str, float]
 
 
+class SARPairRead(BaseModel):
+    rank: int
+    compound_a_id: str
+    compound_b_id: str
+    smiles_a: str
+    smiles_b: str
+    series_a: str | None
+    series_b: str | None
+    pIC50_a: float
+    pIC50_b: float
+    delta_potency: float
+    similarity: float
+    cliff_score: float
+
+
 class PredictionRead(BaseModel):
     property_name: str
     predicted_value: float

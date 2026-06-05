@@ -2,9 +2,9 @@ import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from "rea
 import { createRoot } from "react-dom/client";
 import type { Ketcher } from "ketcher-core";
 import {
+  ChartNoAxesCombined,
   ClipboardList,
   FlaskConical,
-  Heart,
   PencilLine,
   RefreshCw,
   Save,
@@ -73,6 +73,21 @@ type Design = {
   predictions: Prediction[];
   rank: Rank | null;
   feedback: Feedback[];
+};
+
+type SARPair = {
+  rank: number;
+  compound_a_id: string;
+  compound_b_id: string;
+  smiles_a: string;
+  smiles_b: string;
+  series_a: string | null;
+  series_b: string | null;
+  pIC50_a: number;
+  pIC50_b: number;
+  delta_potency: number;
+  similarity: number;
+  cliff_score: number;
 };
 
 type PregeneratedDesign = {
@@ -209,7 +224,8 @@ function App() {
   const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [sortKey, setSortKey] = useState<string>("rank");
-  const [activeTab, setActiveTab] = useState<"review" | "design">("review");
+  const [activeTab, setActiveTab] = useState<"review" | "sar" | "design">("review");
+  const [sarPairs, setSarPairs] = useState<SARPair[]>([]);
   const [randomDesign, setRandomDesign] = useState<PregeneratedDesign | null>(null);
   const [sketchPredictions, setSketchPredictions] = useState<Prediction[]>([]);
   const [sketchStatus, setSketchStatus] = useState("Load a design");
@@ -254,12 +270,14 @@ function App() {
   async function loadProject(projectId: string) {
     if (!projectId) return;
     setStatus("Loading project");
-    const [loadedSummary, loadedDesigns] = await Promise.all([
+    const [loadedSummary, loadedDesigns, loadedSarPairs] = await Promise.all([
       api<ProjectSummary>(`/projects/${projectId}`),
       api<Design[]>(`/projects/${projectId}/designs`),
+      api<SARPair[]>(`/projects/${projectId}/sar-pairs?limit=100&min_similarity=0.15`),
     ]);
     setSummary(loadedSummary);
     setDesigns(loadedDesigns);
+    setSarPairs(loadedSarPairs);
     setSelectedDesignId(loadedDesigns[0]?.design_id ?? null);
     setStatus("Ready");
   }
@@ -369,30 +387,33 @@ function App() {
     }
   }
 
-  async function sendFeedback(design: Design, feedback: string) {
+  async function sendSketchFeedback(feedback: "like" | "dislike") {
+    if (!activeProjectId || !smiles.trim()) return;
     setBusy(true);
     try {
+      const currentSmiles = await readSketchSmiles();
+      let design = designs.find(
+        (item) => item.canonical_smiles === currentSmiles || item.smiles === currentSmiles,
+      );
+      if (!design) {
+        design = await api<Design>(`/projects/${activeProjectId}/designs`, {
+          method: "POST",
+          body: JSON.stringify({
+            smiles: currentSmiles,
+            series: "virtual",
+            submitted_by: "chemist",
+            notes: randomDesign ? `Sketch feedback from ${randomDesign.library_id}` : "Sketch feedback",
+          }),
+        });
+      }
       await api(`/designs/${design.design_id}/feedback`, {
         method: "POST",
         body: JSON.stringify({ user_id: "chemist", feedback, note: note || null }),
       });
       setNote("");
       await loadProject(activeProjectId);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function loadSelectedDesignIntoSketcher() {
-    if (!selectedDesign) return;
-    setBusy(true);
-    try {
-      setSmiles(selectedDesign.canonical_smiles);
-      setEditorSmiles(selectedDesign.canonical_smiles);
-      setSmilesTextDirty(false);
-      setSketchPredictions(selectedDesign.predictions);
-      setSketchStatus(`Loaded ${selectedDesign.design_id}`);
-      await ketcherRef.current?.setMolecule(selectedDesign.canonical_smiles);
+      setSelectedDesignId(design.design_id);
+      setSketchStatus(`${feedback === "like" ? "Liked" : "Disliked"} ${design.design_id}`);
     } finally {
       setBusy(false);
     }
@@ -467,6 +488,10 @@ function App() {
               <button className={activeTab === "review" ? "active" : ""} onClick={() => setActiveTab("review")}>
                 <ClipboardList size={16} />
                 Review
+              </button>
+              <button className={activeTab === "sar" ? "active" : ""} onClick={() => setActiveTab("sar")}>
+                <ChartNoAxesCombined size={16} />
+                SAR
               </button>
               <button className={activeTab === "design" ? "active" : ""} onClick={() => setActiveTab("design")}>
                 <PencilLine size={16} />
@@ -585,6 +610,78 @@ function App() {
               )}
             </aside>
           </div>
+        ) : activeTab === "sar" ? (
+          <div className="sar-workspace">
+            <section className="sar-header-panel">
+              <div>
+                <h3>Potency Cliff SAR</h3>
+                <p className="muted">Ranked by abs(delta pIC50) / (1 - molecular similarity)</p>
+              </div>
+              <div className="sar-metric-strip">
+                <div>
+                  <span>Pairs</span>
+                  <strong>{sarPairs.length}</strong>
+                </div>
+                <div>
+                  <span>Top score</span>
+                  <strong>{formatValue(sarPairs[0]?.cliff_score ?? null)}</strong>
+                </div>
+                <div>
+                  <span>Top delta</span>
+                  <strong>{formatValue(sarPairs[0]?.delta_potency ?? null)}</strong>
+                </div>
+              </div>
+            </section>
+            <section className="table-wrap sar-table-wrap">
+              <table className="sar-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Higher Potency</th>
+                    <th>Lower Potency</th>
+                    <th>Cliff Score</th>
+                    <th>Delta pIC50</th>
+                    <th>Similarity</th>
+                    <th>Series</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sarPairs.map((pair) => (
+                    <tr key={`${pair.compound_a_id}-${pair.compound_b_id}`}>
+                      <td>{pair.rank}</td>
+                      <td>
+                        <div className="molecule-pair-cell">
+                          <MoleculeImage smiles={pair.smiles_a} label={pair.compound_a_id} />
+                          <div>
+                            <strong>{pair.compound_a_id}</strong>
+                            <span>pIC50 {formatValue(pair.pIC50_a)}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="molecule-pair-cell">
+                          <MoleculeImage smiles={pair.smiles_b} label={pair.compound_b_id} />
+                          <div>
+                            <strong>{pair.compound_b_id}</strong>
+                            <span>pIC50 {formatValue(pair.pIC50_b)}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <strong>{formatValue(pair.cliff_score)}</strong>
+                      </td>
+                      <td>{formatValue(pair.delta_potency)}</td>
+                      <td>{pair.similarity.toFixed(3)}</td>
+                      <td>
+                        {pair.series_a ?? "-"} / {pair.series_b ?? "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!sarPairs.length && <p className="empty-table muted">No SAR pairs available.</p>}
+            </section>
+          </div>
         ) : (
           <div className="design-workspace">
             <section className="sketcher-panel">
@@ -609,6 +706,14 @@ function App() {
                   <button disabled={busy || !smiles.trim()} onClick={predictSketch}>
                     <RefreshCw size={16} />
                     Predict
+                  </button>
+                  <button disabled={busy || !smiles.trim()} onClick={() => sendSketchFeedback("like")}>
+                    <ThumbsUp size={16} />
+                    Like
+                  </button>
+                  <button disabled={busy || !smiles.trim()} onClick={() => sendSketchFeedback("dislike")}>
+                    <ThumbsDown size={16} />
+                    Dislike
                   </button>
                   <button className="primary-inline" disabled={busy || !smiles.trim()} onClick={submitSketchDesign}>
                     <Save size={16} />
@@ -669,67 +774,25 @@ function App() {
             </section>
             <aside className="design-side-panel">
               <PredictionReference predictions={sketchPredictions} />
-              <section className="evaluation-panel">
-                <h3>Molecule Evaluation</h3>
-                {selectedDesign ? (
-                  <>
-                    <div className="detail-title">
-                      <div>
-                        <h3>{selectedDesign.design_id}</h3>
-                        <p>{selectedDesign.canonical_smiles}</p>
-                      </div>
-                      <SourcePill source={selectedDesign.source} />
-                    </div>
-                    <div className="molecule-preview compact-preview">
-                      <MoleculeImage
-                        smiles={selectedDesign.canonical_smiles}
-                        label={selectedDesign.design_id}
-                        size="large"
-                      />
-                    </div>
-                    <div className="actions">
-                      <button disabled={busy} onClick={() => sendFeedback(selectedDesign, "like")} title="Like">
-                        <ThumbsUp size={16} />
-                      </button>
-                      <button disabled={busy} onClick={() => sendFeedback(selectedDesign, "dislike")} title="Dislike">
-                        <ThumbsDown size={16} />
-                      </button>
-                      <button disabled={busy} onClick={() => sendFeedback(selectedDesign, "shortlist")} title="Shortlist">
-                        <Heart size={16} />
-                      </button>
-                    </div>
-                    <button disabled={busy} onClick={loadSelectedDesignIntoSketcher}>
-                      <PencilLine size={16} />
-                      Load Selected
-                    </button>
-                    <textarea
-                      value={note}
-                      onChange={(event) => setNote(event.target.value)}
-                      placeholder="Evaluation note"
-                      rows={3}
-                    />
-                    <div className="warning-list">
-                      {selectedDesign.rank?.warnings.map((warning) => <span key={warning}>{warning}</span>)}
-                    </div>
-                    <section>
-                      <h4>
-                        <ClipboardList size={15} />
-                        Feedback
-                      </h4>
-                      {selectedDesign.feedback.length ? (
-                        selectedDesign.feedback.map((item, index) => (
-                          <p className="feedback" key={`${item.user_id}-${index}`}>
-                            <strong>{item.feedback}</strong> {item.note}
-                          </p>
-                        ))
-                      ) : (
-                        <p className="muted">No feedback yet.</p>
-                      )}
-                    </section>
-                  </>
-                ) : (
-                  <p className="muted">No design selected.</p>
-                )}
+              <section className="sketch-feedback-panel">
+                <h3>Sketch Feedback</h3>
+                <p className="muted">Like or dislike the molecule currently shown in the sketcher.</p>
+                <div className="actions">
+                  <button disabled={busy || !smiles.trim()} onClick={() => sendSketchFeedback("like")}>
+                    <ThumbsUp size={16} />
+                    Like
+                  </button>
+                  <button disabled={busy || !smiles.trim()} onClick={() => sendSketchFeedback("dislike")}>
+                    <ThumbsDown size={16} />
+                    Dislike
+                  </button>
+                </div>
+                <textarea
+                  value={note}
+                  onChange={(event) => setNote(event.target.value)}
+                  placeholder="Optional feedback note"
+                  rows={3}
+                />
               </section>
             </aside>
           </div>

@@ -145,8 +145,7 @@ button:disabled {
   border-color: #247363;
 }
 
-.detail-panel h4,
-.evaluation-panel h4 {
+.detail-panel h4 {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -293,15 +292,6 @@ td span {
   border-radius: 8px;
 }
 
-.compact-preview {
-  min-height: 170px;
-}
-
-.compact-preview .molecule-large {
-  max-width: 260px;
-  height: 170px;
-}
-
 .pill {
   display: inline-flex;
   align-items: center;
@@ -349,7 +339,7 @@ td span {
 }
 
 .detail-panel > h3,
-.evaluation-panel > h3 {
+.sketch-feedback-panel > h3 {
   margin: 0;
   font-size: 17px;
 }
@@ -376,7 +366,7 @@ td span {
 
 .actions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 
@@ -407,9 +397,72 @@ td span {
   align-items: start;
 }
 
+.sar-workspace {
+  display: grid;
+  gap: 14px;
+}
+
+.sar-header-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #d9e2df;
+  border-radius: 8px;
+}
+
+.sar-header-panel h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.sar-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: 8px;
+  min-width: 340px;
+}
+
+.sar-metric-strip div {
+  padding: 10px;
+  background: #f8faf9;
+  border: 1px solid #edf1ef;
+  border-radius: 6px;
+}
+
+.sar-metric-strip span {
+  display: block;
+  color: #6f817c;
+  font-size: 12px;
+}
+
+.sar-metric-strip strong {
+  display: block;
+  margin-top: 4px;
+  color: #223036;
+  font-variant-numeric: tabular-nums;
+}
+
+.sar-table {
+  min-width: 1040px;
+}
+
+.molecule-pair-cell {
+  display: grid;
+  grid-template-columns: 120px minmax(110px, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.empty-table {
+  padding: 14px;
+}
+
 .sketcher-panel,
 .prediction-panel,
-.evaluation-panel {
+.sketch-feedback-panel {
   background: #ffffff;
   border: 1px solid #d9e2df;
   border-radius: 8px;
@@ -533,12 +586,12 @@ td span {
 }
 
 .design-side-panel,
-.evaluation-panel {
+.sketch-feedback-panel {
   display: grid;
   gap: 14px;
 }
 
-.evaluation-panel {
+.sketch-feedback-panel {
   padding: 14px;
 }
 
@@ -559,8 +612,18 @@ td span {
 @media (max-width: 1050px) {
   .app-shell,
   .content-grid,
+  .sar-header-panel,
   .design-workspace {
     grid-template-columns: 1fr;
+  }
+
+  .sar-header-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sar-metric-strip {
+    min-width: 0;
   }
 
   .sidebar {
